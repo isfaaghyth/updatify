@@ -2,6 +2,7 @@ package app.isfaaghyth.updatify
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import app.isfaaghyth.updatify.util.NotifEvent
 
 class MainActivity : AppCompatActivity() {
 
