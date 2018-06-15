@@ -12,21 +12,20 @@ import io.reactivex.subjects.PublishSubject
  */
 class NotifEvent {
 
-    private val instance: NotifEvent = NotifEvent()
-    private val subject: PublishSubject<Any> = PublishSubject.create()
+    companion object {
+        private val subject: PublishSubject<Any> = PublishSubject.create()
 
-    fun getInstance(): NotifEvent = instance
+        fun <T> register(tClass: Class<T>, onNext: Consumer<Any>, onError: Consumer<Throwable>): Disposable =
+                subject
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .filter({ o -> o == tClass })
+                        .map({ o -> o })
+                        .subscribe(onNext, onError)
 
-    fun <T> register(tClass: Class<T>, onNext: Consumer<Any>, onError: Consumer<Throwable>): Disposable =
-            subject
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .filter({ o -> o == tClass })
-                    .map({ o -> o })
-                    .subscribe(onNext, onError)
+        fun unregister(disposable: Disposable) = disposable.dispose()
 
-    fun unregister(disposable: Disposable) = disposable.dispose()
-
-    fun post(any: Any) = subject.onNext(any)
+        fun post(any: Any) = subject.onNext(any)
+    }
 
 }
